@@ -11,6 +11,14 @@ import play.api.libs.json._
 
 class PrefCardController @Inject()(val controllerComponents: ControllerComponents)
   extends BaseController{
+
+  private val prefCard = new mutable.ListBuffer[PrefCardItem]()
+  prefCard += PrefCardItem( 1, "Dr. Ivanov", "Orthopedics", "Scalpel, Clamp, Needle Holder", "90 minutes")
+  prefCard += PrefCardItem( 2, "Dr. Smirnov", "Cardiac Surgery", "Scalpel, Suture Material, ECG Machine", "120 minutes")
+
+  implicit val prefCardJson: OFormat[PrefCardItem] = Json.format[PrefCardItem]
+
+
   def getAll(): Action[AnyContent] = Action {
     if (prefCard.isEmpty) {
       NoContent
@@ -19,10 +27,11 @@ class PrefCardController @Inject()(val controllerComponents: ControllerComponent
     }
   }
 
-  private val prefCard = new mutable.ListBuffer[PrefCardItem]()
-  prefCard += PrefCardItem( 1, "Dr. Ivanov", "Orthopedics", "Scalpel, Clamp, Needle Holder", "90 minutes")
-  prefCard += PrefCardItem( 2, "Dr. Smirnov", "Cardiac Surgery", "Scalpel, Suture Material, ECG Machine", "120 minutes")
-
-  implicit val prefCardJson: OFormat[PrefCardItem] = Json.format[PrefCardItem]
-
+  def getById(itemId: Long) = Action {
+    val foundItem = prefCard.find(_.id == itemId)
+    foundItem match {
+      case Some(item) => Ok(Json.toJson(item))
+      case None => NotFound
+    }
+  }
 }
