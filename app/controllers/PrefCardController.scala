@@ -31,7 +31,7 @@ class PrefCardController @Inject()(val controllerComponents: ControllerComponent
     val foundItem = prefCard.find(_.id == itemId)
     foundItem match {
       case Some(item) => Ok(Json.toJson(item))
-      case None => NotFound
+      case None => NotFound(Json.obj("error" -> s"Item with ID $itemId not found"))
     }
   }
 }
