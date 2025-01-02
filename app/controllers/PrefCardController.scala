@@ -52,4 +52,14 @@ class PrefCardController @Inject()(val controllerComponents: ControllerComponent
       case None => BadRequest
     }
   }
+
+  def deleteCard(itemId: Long) = Action {
+    val foundItem = prefCard.find(_.id == itemId)
+    foundItem match {
+      case Some(_) =>
+        prefCard -= foundItem.get
+        NoContent
+      case None => NotFound(Json.obj("error" -> s"Item with ID $itemId not found"))
+    }
+  }
 }
