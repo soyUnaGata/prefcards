@@ -13,4 +13,4 @@ GET     /prefcards                  controllers.PrefCardController.getAll
 GET     /prefcards/:itemId          controllers.PrefCardController.getById(itemId: Long)
 #PUT     /prefcards/edit/:itemId     controllers.PrefCardController.editCard(itemId: Long)
 POST    /prefcards/add              controllers.PrefCardController.addCard()
-#DELETE  /prefcards/remove/:itemId   controllers.PrefCardController.deleteCard(itemId: Long)
+DELETE  /prefcards/remove/:itemId   controllers.PrefCardController.deleteCard(itemId: Long)
