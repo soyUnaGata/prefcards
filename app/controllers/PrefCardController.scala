@@ -1,7 +1,7 @@
 package controllers
 
 import com.fasterxml.jackson.module.scala.deser.overrides.MutableList
-import models.PrefCardItem
+import models.{NewPrefCardItem, PrefCardItem}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 
 import javax.inject.Inject
@@ -17,6 +17,7 @@ class PrefCardController @Inject()(val controllerComponents: ControllerComponent
   prefCard += PrefCardItem( 2, "Dr. Smirnov", "Cardiac Surgery", "Scalpel, Suture Material, ECG Machine", "120 minutes")
 
   implicit val prefCardJson: OFormat[PrefCardItem] = Json.format[PrefCardItem]
+  implicit val newPrefCardJson: OFormat[NewPrefCardItem] = Json.format[NewPrefCardItem]
 
 
   def getAll(): Action[AnyContent] = Action {
@@ -32,6 +33,23 @@ class PrefCardController @Inject()(val controllerComponents: ControllerComponent
     foundItem match {
       case Some(item) => Ok(Json.toJson(item))
       case None => NotFound(Json.obj("error" -> s"Item with ID $itemId not found"))
+    }
+  }
+
+  def addCard() = Action { implicit request =>
+    val content = request.body
+    val jsonObject = content.asJson
+    val prefCardItem: Option[NewPrefCardItem] =
+      jsonObject.flatMap(
+        Json.fromJson[NewPrefCardItem](_).asOpt
+      )
+    prefCardItem match {
+      case Some (newItem) =>
+        val nextId = prefCard.map(_.id).max + 1
+        val toBeAdded = PrefCardItem(nextId, newItem.name, newItem.operation, newItem.tools, newItem.duration)
+        prefCard += toBeAdded
+        Created(Json.toJson(toBeAdded))
+      case None => BadRequest
     }
   }
 }
