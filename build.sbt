@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "42.5.0",
   "com.typesafe.slick" %% "slick" % "3.3.2",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.3.2",
+  "org.flywaydb" % "flyway-core" % "7.0.0",
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
 )
 
