@@ -6,4 +6,3 @@ CREATE TABLE prefcards (
                            duration VARCHAR(255)
 );
 
-DROP TABLE IF EXISTS prefcards;
