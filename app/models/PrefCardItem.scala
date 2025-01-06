@@ -1,16 +1,23 @@
 package models
 
-import play.api.db.slick.HasDatabaseConfigProvider
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.lifted.ProvenShape
+import play.api.libs.json._
+import slick.jdbc.JdbcProfile
 
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 case class PrefCardItem(id: Long, name:String,
                      operation: String, tools: String,
                      duration: String)
 
+object PrefCardItem {
+  implicit val prefCardItemReads: Reads[PrefCardItem] = Json.reads[PrefCardItem]
+  implicit val prefCardItemWrites: Writes[PrefCardItem] = Json.writes[PrefCardItem]
+}
 
-trait PrefCardTable extends HasDatabaseConfigProvider[slick.jdbc.JdbcProfile] {
+class PrefCardTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
   val prefcardQuery: TableQuery[PrefcardsMapping] = TableQuery[PrefcardsMapping]
@@ -20,7 +27,7 @@ trait PrefCardTable extends HasDatabaseConfigProvider[slick.jdbc.JdbcProfile] {
     def operation: Rep[String] = column[String]("operation")
     def tools: Rep[String] = column[String]("tools")
     def duration: Rep[String] = column[String]("duration")
-    def * : ProvenShape[PrefCardItem] = (id, name, operation, tools, duration) <>(PrefCardItem.tupled, PrefCardItem.unapply)
+    def * : ProvenShape[PrefCardItem] = (id, name, operation, tools, duration) <>((PrefCardItem.apply _).tupled, PrefCardItem.unapply)
   }
 
   def insertPrefCard(prefCard: PrefCardItem): Future[Int] = {
