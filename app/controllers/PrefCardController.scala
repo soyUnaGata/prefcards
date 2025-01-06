@@ -2,18 +2,23 @@ package controllers
 
 import javax.inject._
 import play.api.mvc._
+import play.api.libs.json._
+
 import scala.concurrent.{ExecutionContext, Future}
-import models.{PrefCardTable, PrefCardItem}
+import models.{PrefCardItem, PrefCardTable}
+import play.api.db.slick.DatabaseConfigProvider
 
 @Singleton
-class PrefCardController @Inject()(cc: ControllerComponents, prefCardTable: PrefCardTable)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  def addCard = Action.async(parse.json) { request =>
+  val prefCardTable = new PrefCardTable(dbConfigProvider)
+
+  def addCard() = Action.async(parse.json) { request =>
     request.body.validate[PrefCardItem].fold(
-      errors => Future.successful(BadRequest("Invalid data")),
+      errors => Future.successful(BadRequest(Json.obj("message" -> "Invalid data", "errors" -> JsError.toJson(errors)))),
       prefCard => {
         prefCardTable.insertPrefCard(prefCard).map { _ =>
-          Ok("PrefCard added")
+          Ok(Json.obj("message" -> "PrefCard added"))
         }
       }
     )
@@ -21,31 +26,32 @@ class PrefCardController @Inject()(cc: ControllerComponents, prefCardTable: Pref
 
   def getAll = Action.async {
     prefCardTable.getPrefCards.map { prefCards =>
-      Ok(views.html.prefcards(prefCards))
+      Ok(Json.toJson(prefCards))
     }
   }
 
   def getById(id: Long) = Action.async {
     prefCardTable.getPrefCardById(id).map {
-      case Some(prefCard) => Ok(views.html.prefcard(prefCard))
-      case None => NotFound("PrefCard not found")
+      case Some(prefCard) => Ok(Json.toJson(prefCard))
+      case None => NotFound(Json.obj("message" -> "PrefCard not found"))
     }
   }
 
   def updateCard(id: Long) = Action.async(parse.json) { request =>
     request.body.validate[PrefCardItem].fold(
-      errors => Future.successful(BadRequest("Invalid data")),
+      errors => Future.successful(BadRequest(Json.obj("message" -> "Invalid data", "errors" -> JsError.toJson(errors)))),
       prefCard => {
         prefCardTable.updatePrefCard(prefCard).map { _ =>
-          Ok("PrefCard updated")
+          Ok(Json.obj("message" -> "PrefCard updated"))
         }
       }
     )
   }
 
   def deleteCard(id: Long) = Action.async {
-    prefCardTable.deletePrefCard(id).map { _ =>
-      Ok("PrefCard deleted")
+    prefCardTable.deletePrefCard(id).map {
+      case 0 => NotFound(Json.obj("message" -> "PrefCard not found"))
+      case _ => NoContent
     }
   }
 }
