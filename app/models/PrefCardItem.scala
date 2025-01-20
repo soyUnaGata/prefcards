@@ -7,10 +7,26 @@ import slick.jdbc.JdbcProfile
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import io.swagger.annotations.{ApiModel, ApiModelProperty}
 
-case class PrefCardItem(id: Long, name:String,
-                     operation: String, tools: String,
-                     duration: String)
+@ApiModel(description = "Details about a PrefCard item")
+case class PrefCardItem(
+                         @ApiModelProperty(value = "Unique ID of the PrefCard", required = true, example = "1")
+                         id: Long,
+
+                         @ApiModelProperty(value = "Name of the PrefCard", required = true, example = "Surgical Tools")
+                         name: String,
+
+                         @ApiModelProperty(value = "Operation associated with the PrefCard", required = true, example = "Appendectomy")
+                         operation: String,
+
+                         @ApiModelProperty(value = "Tools required for the operation", required = true, example = "Scalpel, Forceps")
+                         tools: String,
+
+                         @ApiModelProperty(value = "Duration of the operation", required = true, example = "2 hours")
+                         duration: String
+                       )
+
 
 object PrefCardItem {
   implicit val prefCardItemReads: Reads[PrefCardItem] = Json.reads[PrefCardItem]
