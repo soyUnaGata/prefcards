@@ -7,7 +7,7 @@ import slick.jdbc.JdbcProfile
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import io.swagger.annotations.{ApiModel, ApiModelProperty}
+import io.swagger.annotations._
 
 @ApiModel(description = "Details about a PrefCard item")
 case class PrefCardItem(
@@ -27,44 +27,78 @@ case class PrefCardItem(
                          duration: String
                        )
 
-
 object PrefCardItem {
   implicit val prefCardItemReads: Reads[PrefCardItem] = Json.reads[PrefCardItem]
   implicit val prefCardItemWrites: Writes[PrefCardItem] = Json.writes[PrefCardItem]
 }
 
-class PrefCardTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+@Api(value = "PrefCard Management", description = "Operations related to PrefCards")
+class PrefCardTable @Inject()(
+                               protected val dbConfigProvider: DatabaseConfigProvider
+                             )(implicit ec: ExecutionContext)
+  extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import profile.api._
+
   val prefcardQuery: TableQuery[PrefcardsMapping] = TableQuery[PrefcardsMapping]
+
+  @ApiModel(description = "PrefCard table mapping")
   private[models] class PrefcardsMapping(tag: Tag) extends Table[PrefCardItem](tag, "prefcards") {
+    @ApiModelProperty(value = "Primary key of the PrefCard", required = true)
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    @ApiModelProperty(value = "Name of the PrefCard", required = true)
     def name: Rep[String] = column[String]("name")
+
+    @ApiModelProperty(value = "Operation associated with the PrefCard", required = true)
     def operation: Rep[String] = column[String]("operation")
+
+    @ApiModelProperty(value = "Tools required for the operation", required = true)
     def tools: Rep[String] = column[String]("tools")
+
+    @ApiModelProperty(value = "Duration of the operation", required = true)
     def duration: Rep[String] = column[String]("duration")
-    def * : ProvenShape[PrefCardItem] = (id, name, operation, tools, duration) <>((PrefCardItem.apply _).tupled, PrefCardItem.unapply)
+
+    def * : ProvenShape[PrefCardItem] =
+      (id, name, operation, tools, duration) <> ((PrefCardItem.apply _).tupled, PrefCardItem.unapply)
   }
 
-  def insertPrefCard(prefCard: PrefCardItem): Future[Int] = {
+  @ApiOperation(value = "Insert a new PrefCard", notes = "Adds a new PrefCard to the database")
+  def insertPrefCard(
+                      @ApiParam(value = "PrefCard details to insert", required = true) prefCard: PrefCardItem
+                    ): Future[Int] = {
     db.run(prefcardQuery += prefCard)
   }
 
+  @ApiOperation(value = "Get all PrefCards", notes = "Retrieves a list of all PrefCards")
   def getPrefCards: Future[Seq[PrefCardItem]] = {
     db.run(prefcardQuery.result)
   }
 
-  def getPrefCardById(id: Long): Future[Option[PrefCardItem]] = {
+  @ApiOperation(
+    value = "Get a PrefCard by ID",
+    notes = "Retrieves details of a PrefCard by its unique ID"
+  )
+  def getPrefCardById(
+                       @ApiParam(value = "Unique ID of the PrefCard", required = true) id: Long
+                     ): Future[Option[PrefCardItem]] = {
     db.run(prefcardQuery.filter(_.id === id).result.headOption)
   }
 
-  def updatePrefCard(prefCard: PrefCardItem): Future[Int] = {
+  @ApiOperation(value = "Update a PrefCard", notes = "Updates details of an existing PrefCard")
+  def updatePrefCard(
+                      @ApiParam(value = "Updated PrefCard details", required = true) prefCard: PrefCardItem
+                    ): Future[Int] = {
     db.run(prefcardQuery.filter(_.id === prefCard.id).update(prefCard))
   }
 
-  def deletePrefCard(id: Long): Future[Int] = {
+  @ApiOperation(value = "Delete a PrefCard", notes = "Deletes a PrefCard by its unique ID")
+  def deletePrefCard(
+                      @ApiParam(value = "Unique ID of the PrefCard to delete", required = true) id: Long
+                    ): Future[Int] = {
     db.run(prefcardQuery.filter(_.id === id).delete)
   }
 }
+
 
 
