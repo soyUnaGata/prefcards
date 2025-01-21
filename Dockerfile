@@ -23,4 +23,4 @@ RUN sbt compile
 EXPOSE 9000
 
 # Запускаем приложение
-CMD ["sbt", "run", "-Dhttp.port=$PORT"]
+CMD ["sbt", "run", "-mem", "256", "-Dhttp.port=$PORT"]
