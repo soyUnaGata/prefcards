@@ -19,7 +19,7 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Add a new PrefCard",
     notes = "Creates a new PrefCard entry in the database",
-    response = classOf[JsObject]
+    response = classOf[PrefCardItem]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard added successfully"),
@@ -73,7 +73,7 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Update a PrefCard",
     notes = "Updates an existing PrefCard identified by its ID",
-    response = classOf[JsObject]
+    response = classOf[PrefCardItem]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard updated successfully"),
@@ -96,7 +96,7 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Delete a PrefCard",
     notes = "Deletes a PrefCard identified by its ID",
-    response = classOf[JsObject]
+    response = classOf[PrefCardItem]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 204, message = "PrefCard deleted successfully"),
