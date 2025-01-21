@@ -1,19 +1,23 @@
 # Use a lightweight JDK base image
 FROM openjdk:17-jdk-slim
 
-# Set the working directory
+# Установка необходимых инструментов
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Copy your app's code
+# Копируем код приложения
 COPY . .
 
-# Install sbt
+# Устанавливаем sbt
 RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.8.3/sbt-1.8.3.deb && \
     dpkg -i sbt.deb && \
     sbt compile
 
-# Expose the app's port
+# Открываем порт приложения
 EXPOSE 9000
 
-# Start the app
+# Запускаем приложение
 CMD ["sbt", "run", "-Dhttp.port=$PORT"]
+
