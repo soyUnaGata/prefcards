@@ -1,8 +1,13 @@
-# Use a lightweight JDK base image
 FROM openjdk:17-jdk-slim
 
 # Установка необходимых инструментов
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl gnupg && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем sbt через официальное хранилище
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" > /etc/apt/sources.list.d/sbt.list && \
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian /" >> /etc/apt/sources.list.d/sbt.list && \
+    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x99E82A75642AC823" | apt-key add - && \
+    apt-get update && apt-get install -y sbt && rm -rf /var/lib/apt/lists/*
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -10,14 +15,11 @@ WORKDIR /app
 # Копируем код приложения
 COPY . .
 
-# Устанавливаем sbt
-RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.8.3/sbt-1.8.3.deb && \
-    dpkg -i sbt.deb && \
-    sbt compile
+# Компилируем приложение
+RUN sbt compile
 
 # Открываем порт приложения
 EXPOSE 9000
 
 # Запускаем приложение
 CMD ["sbt", "run", "-Dhttp.port=$PORT"]
-
