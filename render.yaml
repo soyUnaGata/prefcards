@@ -3,10 +3,11 @@ services:
     name: prefcards
     env: docker
     region: frankfurter
-    buildCommand: sbt stage
-    startCommand: target/universal/stage/bin/<your-app-name> -Dhttp.port=$PORT
+    buildCommand: sbt compile
+    startCommand: sbt run -Dhttp.port=$PORT
     autoDeploy: true
-    dockerfilePath: ./Dockerfile
     envVars:
+      - key: PORT
+        value: "9000"
       - key: JAVA_TOOL_OPTIONS
         value: "-Xmx512m"

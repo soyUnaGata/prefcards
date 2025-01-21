@@ -4,14 +4,16 @@ FROM openjdk:17-jdk-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy the application code to the container
+# Copy your app's code
 COPY . .
 
-# Build the app
-RUN sbt stage
+# Install sbt
+RUN curl -L -o sbt.deb https://github.com/sbt/sbt/releases/download/v1.8.3/sbt-1.8.3.deb && \
+    dpkg -i sbt.deb && \
+    sbt compile
 
 # Expose the app's port
 EXPOSE 9000
 
-# Command to run the app
-CMD ["target/universal/stage/bin/<your-app-name>", "-Dhttp.port=$PORT"]
+# Start the app
+CMD ["sbt", "run", "-Dhttp.port=$PORT"]
