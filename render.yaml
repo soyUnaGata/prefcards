@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: prefcards
+    env: docker
+    region: frankfurter
+    buildCommand: sbt stage
+    startCommand: target/universal/stage/bin/<your-app-name> -Dhttp.port=$PORT
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xmx512m"
