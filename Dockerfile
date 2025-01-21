@@ -12,6 +12,7 @@ RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" > /etc/apt/so
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+COPY .sbtopts /root/.sbt/.sbtopts
 # Копируем код приложения
 COPY . .
 
