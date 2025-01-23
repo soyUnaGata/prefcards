@@ -1,6 +1,6 @@
 logs
 target
-/.bsp
+/temp
 /.idea
 /.idea_modules
 /.classpath
