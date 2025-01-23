@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy your project into the container
-COPY . /tmp/build/
+COPY . /tmp
 
 # Pre-build with sbt
-RUN cd /tmp/build && \
+RUN cd /tmp && \
     sbt compile
 
 CMD ["sbt"]
