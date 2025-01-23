@@ -21,4 +21,4 @@ COPY . /tmp
 RUN cd /tmp && \
     sbt compile
 
-CMD ["sbt"]
+CMD ["sbt", "-Dsbt.rootdir=true"]
