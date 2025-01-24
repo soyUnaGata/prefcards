@@ -20,9 +20,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.9.2",
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
 
-  "com.github.dwickern" %% "swagger-play3.0" % "4.0.0",
-
-);
+  "com.github.dwickern" %% "swagger-play3.0" % "4.0.0"
+)
 
 
 libraryDependencies += guice

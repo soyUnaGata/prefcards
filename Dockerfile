@@ -1,24 +1,17 @@
-FROM openjdk:11-jdk-slim
+# Use the Scala sbt official image
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.5_3.5.2
 
-ENV SBT_VERSION 1.8.2
+# Set the working directory
+WORKDIR /app
 
-# Install tools and SBT
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl unzip ca-certificates && \
-    curl -L -o /tmp/sbt.zip \
-      https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.zip && \
-    mkdir -p /opt/sbt && \
-    unzip /tmp/sbt.zip -d /opt/sbt && \
-    rm /tmp/sbt.zip && \
-    chmod +x /opt/sbt/sbt/bin/sbt && \
-    ln -s /opt/sbt/sbt/bin/sbt /usr/bin/sbt && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+# Copy all application files to the container
+COPY . ./
 
-# Copy your project into the container
-COPY . /tmp
+# Build the application
+RUN sbt stage
 
-# Pre-build with sbt
-RUN cd /tmp && \
-    sbt compile
+# Expose the default Play Framework port
+EXPOSE 9000
 
-CMD ["sbt", "-Dsbt.rootdir=true"]
+# Run the application
+CMD ["sh", "-c", "./target/universal/stage/bin/prefcards -Dplay.secret=$PLAY_SECRET"]
