@@ -45,7 +45,7 @@ class PrefCardTable @Inject()(
   @ApiModel(description = "PrefCard table mapping")
   private[models] class PrefcardsMapping(tag: Tag) extends Table[PrefCardItem](tag, "prefcards") {
     @ApiModelProperty(value = "Primary key of the PrefCard", required = true)
-    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+    def id: Rep[Option[Long]] = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
 
     @ApiModelProperty(value = "Name of the PrefCard", required = true)
     def name: Rep[String] = column[String]("name")
@@ -66,7 +66,7 @@ class PrefCardTable @Inject()(
   @ApiOperation(value = "Insert a new PrefCard", notes = "Adds a new PrefCard to the database")
   def insertPrefCard(
                       @ApiParam(value = "PrefCard details to insert", required = true) prefCard: PrefCardItem
-                    ): Future[Long] = {
+                    ): Future[Option[Long]] = {
     val newPrefCard = prefCard.copy(id = None)
     db.run(prefcardQuery returning prefcardQuery.map(_.id) += newPrefCard)
   }
@@ -91,7 +91,12 @@ class PrefCardTable @Inject()(
   def updatePrefCard(
                       @ApiParam(value = "Updated PrefCard details", required = true) prefCard: PrefCardItem
                     ): Future[Int] = {
-    db.run(prefcardQuery.filter(_.id === prefCard.id).update(prefCard))
+    prefCard.id match {
+      case Some(cardId) =>
+        db.run(prefcardQuery.filter(_.id === cardId).update(prefCard))
+      case None =>
+        Future.failed(new IllegalArgumentException("Cannot update PrefCard without an ID"))
+    }
   }
 
   @ApiOperation(value = "Delete a PrefCard", notes = "Deletes a PrefCard by its unique ID")
