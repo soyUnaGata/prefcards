@@ -12,7 +12,7 @@ import io.swagger.annotations._
 @ApiModel(description = "Details about a PrefCard item")
 case class PrefCardItem(
                          @ApiModelProperty(value = "Unique ID of the PrefCard", required = true, example = "1")
-                         id: Long,
+                         id: Option[Long],
 
                          @ApiModelProperty(value = "Name of the PrefCard", required = true, example = "Surgical Tools")
                          name: String,
@@ -66,9 +66,11 @@ class PrefCardTable @Inject()(
   @ApiOperation(value = "Insert a new PrefCard", notes = "Adds a new PrefCard to the database")
   def insertPrefCard(
                       @ApiParam(value = "PrefCard details to insert", required = true) prefCard: PrefCardItem
-                    ): Future[Int] = {
-    db.run(prefcardQuery += prefCard)
+                    ): Future[Long] = {
+    val newPrefCard = prefCard.copy(id = None)
+    db.run(prefcardQuery returning prefcardQuery.map(_.id) += newPrefCard)
   }
+
 
   @ApiOperation(value = "Get all PrefCards", notes = "Retrieves a list of all PrefCards")
   def getPrefCards: Future[Seq[PrefCardItem]] = {
