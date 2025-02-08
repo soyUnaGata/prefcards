@@ -45,7 +45,7 @@ class PrefCardTable @Inject()(
   @ApiModel(description = "PrefCard table mapping")
   private[models] class PrefcardsMapping(tag: Tag) extends Table[PrefCardItem](tag, "prefcards") {
     @ApiModelProperty(value = "Primary key of the PrefCard", required = true)
-    def id: Rep[Option[Long]] = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     @ApiModelProperty(value = "Name of the PrefCard", required = true)
     def name: Rep[String] = column[String]("name")
@@ -60,13 +60,13 @@ class PrefCardTable @Inject()(
     def duration: Rep[String] = column[String]("duration")
 
     def * : ProvenShape[PrefCardItem] =
-      (id, name, operation, tools, duration) <> ((PrefCardItem.apply _).tupled, PrefCardItem.unapply)
+      (id.?, name, operation, tools, duration) <> ((PrefCardItem.apply _).tupled, PrefCardItem.unapply)
   }
 
   @ApiOperation(value = "Insert a new PrefCard", notes = "Adds a new PrefCard to the database")
   def insertPrefCard(
                       @ApiParam(value = "PrefCard details to insert", required = true) prefCard: PrefCardItem
-                    ): Future[Option[Long]] = {
+                    ): Future[Long] = {
     val newPrefCard = prefCard.copy(id = None)
     db.run(prefcardQuery returning prefcardQuery.map(_.id) += newPrefCard)
   }
