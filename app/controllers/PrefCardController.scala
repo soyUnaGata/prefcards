@@ -80,6 +80,15 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
     new ApiResponse(code = 400, message = "Invalid input data"),
     new ApiResponse(code = 404, message = "PrefCard not found")
   ))
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(
+      name = "body",
+      value = "Updated PrefCard details",
+      required = true,
+      dataType = "models.PrefCardItem",
+      paramType = "body"
+    )
+  ))
   def updateCard(
                   @ApiParam(value = "ID of the PrefCard to update", required = true) id: Long
                 ): Action[JsValue] = Action.async(parse.json) { request =>
