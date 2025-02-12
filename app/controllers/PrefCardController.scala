@@ -78,12 +78,13 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard updated successfully"),
     new ApiResponse(code = 400, message = "Invalid input data"),
-    new ApiResponse(code = 404, message = "PrefCard not found")
+    new ApiResponse(code = 404, message = "PrefCard not found"),
+    new ApiResponse(code = 500, message = "Internal server error")
   ))
   @ApiImplicitParams(Array(
     new ApiImplicitParam(
       name = "body",
-      value = "Updated PrefCard details",
+      value = "Updated PrefCard data",
       required = true,
       dataType = "models.PrefCardItem",
       paramType = "body"
@@ -96,7 +97,7 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
       errors => Future.successful(BadRequest(Json.obj("message" -> "Invalid data", "errors" -> JsError.toJson(errors)))),
       prefCard => {
         prefCardTable.updatePrefCard(prefCard).map { _ =>
-          Ok(Json.obj("message" -> "PrefCard updated"))
+          Ok(Json.obj("message" -> "PrefCard updated", "data" -> Json.toJson(prefCard)))
         }
       }
     )
