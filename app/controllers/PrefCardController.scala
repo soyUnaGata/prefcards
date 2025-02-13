@@ -86,7 +86,7 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
       name = "body",
       value = "Updated PrefCard data",
       required = true,
-      dataType = "models.PrefCardItem",
+      dataTypeClass = classOf[PrefCardItem],
       paramType = "body"
     )
   ))
