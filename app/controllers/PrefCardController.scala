@@ -73,7 +73,8 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Update a PrefCard",
     notes = "Updates an existing PrefCard identified by its ID",
-    response = classOf[PrefCardItem]
+    response = classOf[PrefCardItem],
+    httpMethod = "PUT"
   )
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard updated successfully"),
