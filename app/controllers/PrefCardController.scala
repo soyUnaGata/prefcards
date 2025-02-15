@@ -66,7 +66,8 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Get a PrefCard by ID",
     notes = "Retrieves a PrefCard by its unique ID",
-    response = classOf[PrefCardItem]
+    response = classOf[PrefCardItem],
+    httpMethod = "GET"
   )
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard retrieved"),
@@ -117,7 +118,8 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Delete a PrefCard",
     notes = "Deletes a PrefCard identified by its ID",
-    response = classOf[PrefCardItem]
+    response = classOf[PrefCardItem],
+    httpMethod = "DELETE"
   )
   @ApiResponses(Array(
     new ApiResponse(code = 204, message = "PrefCard deleted successfully"),
