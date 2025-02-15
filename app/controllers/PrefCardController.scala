@@ -19,8 +19,19 @@ class PrefCardController @Inject()(cc: ControllerComponents, dbConfigProvider: D
   @ApiOperation(
     value = "Add a new PrefCard",
     notes = "Creates a new PrefCard entry in the database",
-    response = classOf[PrefCardItem]
+    response = classOf[PrefCardItem],
+    httpMethod = "POST",
+    consumes = "application/json"
   )
+  @ApiImplicitParams(Array(
+    new ApiImplicitParam(
+      name = "body",
+      value = "PrefCard data",
+      required = true,
+      dataTypeClass = classOf[PrefCardItem],
+      paramType = "body"
+    )
+  ))
   @ApiResponses(Array(
     new ApiResponse(code = 200, message = "PrefCard added successfully"),
     new ApiResponse(code = 400, message = "Invalid input data")
